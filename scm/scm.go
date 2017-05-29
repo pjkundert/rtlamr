@@ -19,6 +19,7 @@ package scm
 import (
 	"encoding/binary"
 	"fmt"
+	"log"
 	"strconv"
 
 	"github.com/bemasher/rtlamr/crc"
@@ -80,8 +81,10 @@ func (p Parser) Parse(indices []int) (msgs []parse.Message) {
 
 		// If the checksum fails, bail.
 		if p.Checksum(data.Bytes[2:12]) != 0 {
+			log.Println( data.Bits, ": Bad CRC" )
 			continue
 		}
+		log.Println( data.Bits, ": " )
 
 		scm := NewSCM(data)
 
@@ -155,6 +158,7 @@ func (scm SCM) Record() (r []string) {
 	r = append(r, "0x"+strconv.FormatUint(uint64(scm.TamperEnc), 16))
 	r = append(r, strconv.FormatUint(uint64(scm.Consumption), 10))
 	r = append(r, "0x"+strconv.FormatUint(uint64(scm.ChecksumVal), 16))
+
 
 	return
 }
